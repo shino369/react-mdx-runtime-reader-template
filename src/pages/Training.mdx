@@ -1,0 +1,298 @@
+import reactLogo from '@/assets/react.svg'
+import viteLogo from '@/assets/vite.svg'
+import SleepComponent from '@/components/SleepComponent'
+import ArrayToObjectComponent from '@/components/ArrayToObjectComponent'
+import ArrayOfObjectToMatrixComponent from '@/components/ArrayOfObjectToMatrixComponent'
+import {CodeBlock} from '@/layout'
+
+export const test = 123
+
+# React Training
+
+<div>
+    <a href="https://vitejs.dev" target="_blank">
+        {/* <img src={viteLogo} className="logo" alt="Vite logo" /> */}
+    </a>
+    <a href="https://react.dev" target="_blank">
+        <img src={reactLogo} className="logo react" alt="React logo" />
+    </a>
+</div>
+
+You are going to complete the following tasks. Mandatory questions (<span style={{color: "red"}}>*</span>) are required. Other you can skip if you really have no idea how to do.
+
+## 1. Sleep() (Easy) <span style={{color: "red"}}>*</span>
+Given a positive integer millis, write an asyncronous function that sleeps for millis milliseconds. It can resolve any value./
+Popup an alert window to show the time diff after that
+
+Examples: 
+<CodeBlock title="question 1">
+```tsx
+/*
+    e.g.
+    Input : millis = 100
+    Output : 100
+ */
+let t = Date.now();
+sleep(100).then(() => {
+  alert(Date.now() - t); // 100
+});
+```
+</CodeBlock>
+
+<SleepComponent />
+
+## 2. Array to Object Transformation (Easy) <span style={{color: "red"}}>*</span>
+Transform array to Object by using `id` as key.
+
+<CodeBlock title="question 2">
+```tsx
+/*
+    please use correct json format
+    Input :  [
+        {
+            "name": "Lawrence",
+            "isHero": true,
+            "id": "0000"
+        },
+        {
+            "name": "Aaron",
+            "id": "0001"
+        },
+        {
+            "name": "Anthony",
+            "id": "0002"
+        },
+        {
+            "name": "Anson",
+            "id": "0003"
+        } 
+    ]
+
+    Output : {
+        '0000' : {
+            name: 'Lawrence',
+            isHero: true
+        },
+        '0001' : {
+            name: 'Aaron'
+        },
+        '0002' : {
+            name: 'Anthony'
+        },
+        '0003' : {
+            name: 'Anson'
+        }
+    }
+*/
+
+const arrayToObject = (arr: any[]): Record<string, Record<string, any>> => {
+    // your code here
+    // return {}
+}
+
+```
+</CodeBlock>
+
+<ArrayToObjectComponent/>
+
+
+## 3. Debounce (Easy) <span style={{color: "red"}}>*</span>
+Given a function fn and a time in milliseconds t, return a debounced version of that function.
+
+A debounced function is a function whose execution is delayed by t milliseconds and whose execution is cancelled if it is called again within that window of time. The debounced function should also recieve the passed parameters.
+
+For example, let's say t = 50ms, and the function was called at 30ms, 60ms, and 100ms. The first 2 function calls would be cancelled, and the 3rd function call would be executed at 150ms. If instead t = 35ms, The 1st call would be cancelled, the 2nd would be executed at 95ms, and the 3rd would be executed at 135ms.
+
+Try to implement a debounce function with alert button. Write the component by yourself.
+
+<CodeBlock title="question 3">
+```tsx
+const debounce = (fn, wait) => {
+    return (...args) => {
+        // your code
+    }
+};
+
+const debouncedAlert = debounce(() => {
+    alert('hi')
+}, 300)
+
+// <button onClick={debouncedAlert}>alert<button>
+```
+</CodeBlock>
+
+
+*Put your component here. You have to create it by your self*
+
+
+## 4. Array of Objects to Matrix (Medium)
+Write a function that converts an array of objects `arr` into a matrix `m`.
+
+`arr` is an array of objects or arrays. Each item in the array can be deeply nested with child arrays and child objects. It can also contain numbers, strings, booleans, and null values.
+
+The first row m should be the column names. If there is no nesting, the column names are the unique keys within the objects. If there is nesting, the column names are the respective paths in the object separated by `"."`.
+
+Each of the remaining rows corresponds to an object in `arr`. Each value in the matrix corresponds to a value in an object. If a given object doesn't contain a value for a given column, the cell should contain an empty string `""`.
+
+The colums in the matrix should be in lexographically ascending order.
+
+<CodeBlock title="question 4">
+```tsx
+// e.g.1
+// Input: 
+// arr = [
+//   {"b": 1, "a": 2},
+//   {"b": 3, "a": 4}
+// ]
+// Output: 
+// [
+//   ["a", "b"],
+//   [2, 1],
+//   [4, 3]
+// ]
+
+// Explanation:
+// There are two unique column names in the two objects: "a" and "b".
+// "a" corresponds with [2, 4].
+// "b" coresponds with [1, 3].
+
+// e.g.2
+// Input: 
+// arr = [
+//   {"a": 1, "b": 2},
+//   {"c": 3, "d": 4},
+//   {}
+// ]
+// Output: 
+// [
+//   ["a", "b", "c", "d"],
+//   [1, 2, "", ""],
+//   ["", "", 3, 4],
+//   ["", "", "", ""]
+// ]
+
+// Explanation:
+// There are 4 unique column names: "a", "b", "c", "d".
+// The first object has values associated with "a" and "b".
+// The second object has values associated with "c" and "d".
+// The third object has no keys, so it is just a row of empty strings.
+
+// e.g.3
+// Input: 
+// arr = [
+//   {"a": {"b": 1, "c": 2}},
+//   {"a": {"b": 3, "d": 4}}
+// ]
+// Output: 
+// [
+//   ["a.b", "a.c", "a.d"],
+//   [1, 2, ""],
+//   [3, "", 4]
+// ]
+
+// Explanation:
+// In this example, the objects are nested. The keys represent the full path to each value separated by periods.
+// There are three paths: "a.b", "a.c", "a.d".
+
+// e.g.4
+// Input: 
+// arr = [
+//   [{"a": null}],
+//   [{"b": true}],
+//   [{"c": "x"}]
+// ]
+// Output: 
+// [
+//   ["0.a", "0.b", "0.c"],
+//   [null, "", ""],
+//   ["", true, ""],
+//   ["", "", "x"]
+// ]
+
+// Explanation:
+// Arrays are also considered objects with their keys being their indices.
+// Each array has one element so the keys are "0.a", "0.b", and "0.c".
+
+// e.g.5
+// Input: 
+// arr = [
+//   {},
+//   {},
+//   {},
+// ]
+// Output: 
+// [
+//   [],
+//   [],
+//   [],
+//   []
+// ]
+
+// Explanation:
+// There are no keys so every row is an empty array.
+
+
+// Constraints:
+// 1 <= arr.length <= 1000
+// unique keys <= 1000
+
+const jsonToMatrix = function(arr: any[]) {
+    const matrix = []
+    // your code here
+
+    return matrix
+};
+
+```
+</CodeBlock>
+
+<ArrayOfObjectToMatrixComponent/>
+
+## 5. React State Management (Medium) <span style={{color: "red"}}>*</span>
+Try to write 2 new pages and add them to the navbar (top-right corner). Inside the 2 pages, create a couter component with a button to increase and decrease the count. 
+
+The two pages should share a same counter state, i.e. increasing the counter in page A also increase the counter in page B.
+
+Please note that you cannot directly use prop drilling. You may use: context / redux / jotai / recoil
+
+You can add some visual design by yourself, using css or tailwindcss.
+
+<CodeBlock title="question 5">
+```js
+// something like:
+
+//                                  [pageA  pageB]
+//                 100 
+//         [increase] [decrease]
+
+```
+</CodeBlock>
+
+## 6. Throttling & Hooks (Medium) <span style={{color: "red"}}>*</span>
+Try to enhance the code you have written in Q.5. Add 2 features:
+1.  Prevent duplicate clicks within a specific range of time. \
+    For example disable within 1000ms:    \
+        0ms     click and increase counter to 1\
+        100ms   click and nothing happen\
+        ...\
+        900ms   click and nothing happen\
+        1000ms  click and increase counter to 2
+
+2. subscribe to the counter state, and reset it to 0 when counter exceed 10.
+
+## 7. Functional Page Design (hard)
+Create a functional page similar to a forum, base on API provided by `https://jsonplaceholder.typicode.com/`. You have to:
+1. create a page to show a list of posts in `https://jsonplaceholder.typicode.com/posts`, showing `title` and `username (get by userId)`.
+2. create a searching component to filter the posts by keywords. Posts can be filtered by:
+    - `title`.
+    - `username`
+3. route to a detail page showing the post detail after clicking the post:
+    - `title`
+    - `username`
+    - `body`
+    - `list of comments related to the post`
+        - `email (some does not exist in /users)`
+        - `name`
+        - `body`
+
+4. route to user profile page after clicking the user (if exist) and show all data provided.

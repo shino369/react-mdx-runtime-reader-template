@@ -1,0 +1,533 @@
+import {CodeBlock} from '@/layout'
+import folderStructure from "@/assets/folderstructure.jpg"
+
+# [React.js](https://reactjs.org/)  <a href="https://github.com/facebook/react" style={{color: 'unset'}}><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><g fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></g></svg></a>
+
+
+React is a JavaScript library for building user interfaces.
+
+* **Declarative:** React makes it painless to create interactive UIs. Design simple views for each state in your application, and React will efficiently update and render just the right components when your data changes. Declarative views make your code more predictable, simpler to understand, and easier to debug.
+* **Component-Based:** Build encapsulated components that manage their own state, then compose them to make complex UIs. Since component logic is written in JavaScript instead of templates, you can easily pass rich data through your app and keep the state out of the DOM.
+* **Learn Once, Write Anywhere:** We don't make assumptions about the rest of your technology stack, so you can develop new features in React without rewriting existing code. React can also render on the server using Node and power mobile apps using [React Native](https://reactnative.dev/).
+
+[Learn how to use React in your project](https://reactjs.org/docs/getting-started.html).
+
+
+
+## Introduction
+
+You are required to know : 
+- Javascript + Typescript
+- React Class Component for old code maintainence / debug
+- React Functional Component for new development
+- Redux + Redux saga
+
+
+Example of a React Class Component
+<CodeBlock title={'ExampleClassCompoent.jsx'}>
+```ts
+class Container extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            show: true,
+            text: 'hello'
+        };
+    }
+    delHeader = () => {
+        this.setState({show: false});
+    }
+    render() {
+        return (
+            <div>
+                {this.state.show && <Child text={this.state.text} />}
+                <button type="button" onClick={this.delHeader}>Delete Header</button>
+            </div>
+        );
+    }
+}
+
+class Child extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    componentWillUnmount() {
+        alert("The component named Header is about to be unmounted.");
+    }
+    render() {
+        return (
+            <h1>{this.props.text}</h1>
+        );
+    }
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<Container />);
+```
+</CodeBlock>
+<br/>
+Functional Component is introduced since `React 16.8`.
+
+Example of a functional component: 
+
+<br/>
+
+<CodeBlock title={'ExampleFunctionalComponent.jsx'}>
+```ts
+const Container: React.FC<{}> = () => {
+    const [show, setShow] = React.useState<boolean>(false)
+    const [text, setText] = React.useState<string>('hello')
+    const delHeader = () => {
+        setShow(false);
+    }
+    return (
+        <div>
+            { show && <Child text={text} />}
+            <button type="button" onClick={delHeader}>Delete Header</button>
+        </div>
+    )
+}
+
+const Child: React.FC<{text: string}> = ({text}) => {
+    React.useEffect(() => {
+        return () => {
+            alert("The component named Header is about to be unmounted.");
+        }
+    },[])
+    return (
+      <h1>{text}</h1>
+    )
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+root.render(<Container />);
+```
+</CodeBlock>
+
+For class component, please read the [online tutorial](https://www.w3schools.com/react/react_lifecycle.asp) to learn about the `lifecycle`.
+
+Here we will mainly introduce commonly used `Functional Component` and `Hooks`.
+
+## Typescript
+Typescript enhance type checking and reduce error.\
+Here are some examples.
+
+<CodeBlock title={'typescript-example.ts'}>
+```ts
+// some example
+
+const count: number = 0
+
+interface Base = {
+    name: string
+}
+
+interface APIResponse<T> {
+    status: number
+    error?: string
+    data: T
+}
+
+const func = async <T extends Base, R> (params: T) : Promise<APIResponse<R>> => {
+    const response = await GetRequest('/path', params)
+    return response
+}
+
+interface Nested {
+    [key: string]: {
+        [key:string]: Base[]
+    }
+}
+
+const nested: Nested = {
+    one: {
+        _one: [
+            {
+                name: '123'
+            }
+        ],
+        _two: [
+            {
+                name: '321'
+            }
+        ]
+    },
+    two: {
+        _three: [
+            {
+                name: '111'
+            }
+        ],
+        _four: [
+            {
+                name: '222'
+            }
+        ]
+    }
+}
+
+```
+</CodeBlock>
+
+## React Functional Component
+
+### 1.1 Component Structure
+React make use of V-DOM to rerender a page. It compares the state changes of components to the real dom, and take the least effect to rerender a specific part of the page.
+Take the following component as a quick look:
+
+<CodeBlock title="Example.tsx">
+```ts
+// import required modules
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
+
+// declare interface or type
+interface Props {
+    text: string
+    mapper: Record<string, (str:string) => string[])>
+    clean?: boolean
+}
+
+// declare component and destructure props
+const SomeComponent: React.FC<Props> = ({
+    text, 
+    mapper,
+    clean
+}) => {
+    // declare neccessary state
+    const [mappedKeys, setMappedKeys] = useState<string[]>([])
+
+    // lifecycle hook
+    useEffect(() => {
+        return () => {
+            clean && alert('clean up!')
+        }
+    },[])
+
+    useEffect(() => {
+        setMappedKey(mapper[text])
+    }, [mapper, text])
+
+    // other functions...
+
+    const logging = (value: string) => {
+        console.log(value)
+    }
+
+    const keyList = useMemo(() => (
+        <div>
+            {
+                mappedKeys.map((k) => 
+                    (<div onClick={() => { logging(k) }} > { k } </div>)
+                )
+            }
+        </div>
+    ), [mappedKeys])
+
+    // return render tsx
+    return (
+        <div className="wrapper">
+            {keyList}
+        </div>
+    )
+}
+```
+</CodeBlock>
+
+### 1.2 File Structure
+React use a file structure of JSX / TSX, which contains full power of javascript along with XML.\
+Works just like building puzzles.
+<CodeBlock title={'index.tsx'}>
+```tsx
+ReactDOM.render(
+  <React.StrictMode>  {/* strict mode */}
+    <Provider store={store}>    {/* redux store provider */}
+      <PersistGate loading={null} persistor={persistor}>    {/* locat storage persistor */}
+        <ConnectedRouter history={history}> {/* further more.... */}
+          <LastLocationProvider>
+            <App /> {/* the main app */}
+          </LastLocationProvider>
+        </ConnectedRouter>
+      </PersistGate>
+    </Provider>
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+```
+</CodeBlock>
+
+
+<CodeBlock title={'App.tsx'}>
+```tsx
+  return (
+    <ErrorBoundary>
+      <Suspense fallback={<Loader clear />}>
+        <div>
+          <Header />    {/* we call these components*/}
+          <Main />
+          <RemoteCommand />
+          <IdleTimer />
+          <LoadingLayer />
+          <AuthorityDialog />
+          <Footer />
+        </div>
+      </Suspense>
+    </ErrorBoundary>
+  );
+};
+
+export default App;
+
+```
+</CodeBlock>
+
+Here's an actual folder structure.
+
+<img src={folderStructure} />
+
+### 2. Hook
+Functional Component use hook to perform state management and lifecycle action, because state cannot be preserved inside a function. The hooks help to store the value else where.
+
+#### 2.1. useState Hook
+The `useState` hook is mainly used for component state management.
+
+<CodeBlock title="useState.tsx">
+```tsx
+    const [count, setCount] = useState<number>(0)
+    /*       1        2                   3    4        */
+    
+    /**
+     * 1. variable
+     * 2. setter
+     * 3. type
+     * 4. initial value
+     */
+```
+</CodeBlock>
+
+Generally it is neccessary to use `useState` to trigger component rerender.
+<CodeBlock title="useState.tsx">
+```tsx
+let _count = 0
+const [count, setCount] = useState<number>(0) 
+
+_count ++   // will not rerender, and will become 0 again for next rerender
+
+setCount(p => ++p) // will renderer, and will become 1 for next rerender
+
+return <>{count} {_count}</>
+```
+</CodeBlock>
+
+So it is one reason why some people consider React is very dumb. The setter method makes some kind of data type very strange. Take `Array` as example :
+<CodeBlock title="someCompare.ts">
+```ts
+// vue.js
+const arr = ref([])
+arr.value.push(Math.random())
+
+// svelte.js
+const arr = []
+arr.push(Math.random())
+
+// react.js
+const [arr, setArr] = useState<number[]>([]) 
+setArr(prev => ([
+    ...prev, Math.random()  // <----- literally WTF
+]))  
+// It has to reassign the whole array with O(N), and will not trigger rerender if you directly mutate the value. 
+```
+</CodeBlock>
+
+Some data type like `Map()` or `WeakMap()` you may never see someone using in react, because they get used to use `Object`. 
+
+And obviously, it also takes O(N) to reassign Object : 
+<CodeBlock title="useState.tsx">
+```tsx
+const [obj, setObj] = useState<{[key:string]: string}>({}) 
+setObj(prev => ({
+    ...prev,        // will reassign all again
+    someKey: true
+}))
+```
+</CodeBlock>
+
+#### 2.2. useEffect Hook
+useEffect is mainly use for lifecycle and subscribe to state change.
+<CodeBlock title="useEffect.tsx">
+```tsx
+useEffect(() => {
+    alert('component mounted')  // (1)
+    init()
+
+    return () => {
+        alert('component unmounted') // (2)
+    }
+
+},
+    []  // (3)
+)
+
+/**
+ * 1: function here will be called when hook triggered
+ * 2: clean up side effect, will trigger before component unmounted
+ * 3: dependencies, 
+ *          -   empty array:    only trigger once when componet mounted.
+ *          -   with variable:  subscribe to that variable(s), and will trigger when value changed.
+ */
+
+```
+</CodeBlock>
+
+#### 2.3. useCallback and useMemo
+Because the whole component will rerender when state change, `all functions and variable` that not using hook will be initialize after rerender. For function or variable we do not want to rerender, we will use useCallback and useMemo, or using React.memo to wrap the whole component.
+
+Take following code as example. We can use React.memo to wrap a specific component to prevent rerendering that. (You can use useMemo hook to achieve the same effect if declaring a function to return TSX inside Parent component)
+
+<CodeBlock title="useCallback_memo.tsx">
+```ts
+const Parent: React.FC<{}> = () => {
+    const [text, setText] = useState<string>('hello')
+    const [count, setCount] = useState<number>(0)
+
+    const sendRequest = async () => {
+        try {
+            const res = await fetch('/someAPI', {
+                method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                body: JSON.stringify({
+                    test: 123
+                })
+            })
+        }
+    }
+
+    // same as ChildComponent
+    const child = useMemo(() => (
+        <div>
+            { text }
+            <button onClick={sendRequest}> click me! </button>
+        </div>
+    ), [text])
+
+    const add = () => {
+        setCount(p => ++p)
+    }
+
+    return (
+        <div>
+            <button onClick={add}>add</button>
+            <ChildComponent text={text} onClick={sendRequest} />
+        </div>
+    )
+}
+
+// child
+const ChildComponent: React.FC<{text: string, sendRequest: () => void}> = React.memo(({text, sendRequest}) => {
+
+    return (
+        <div>
+            { text }
+            <button onClick={sendRequest}> click me! <button/>
+        </div>
+    )
+})
+```
+</CodeBlock>
+
+Seems reasonable right? However if you click `add`, `ChildComponent` will rerender again even though `count` is not passed as props into `ChildComponent`. This is because function `sendRequest` is rerendered after state change.
+To prevent so, you have to ue `useCallback` to wrap the function:
+<CodeBlock title="useCallback.tsx">
+```ts
+    const sendRequest = useCallback(async () => {
+        try {
+            const res = await fetch('/someAPI', {
+                method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                body: JSON.stringify({
+                    test: 123
+                })
+            })
+        }
+    },[])
+```
+</CodeBlock>
+
+And this the the reason why some people hate react.
+
+### 2.4 useContext
+ContextAPI is a built-in api for state sharing. Declare a context provider to wrap all children.
+<CodeBlock title={'App.tsx'}>
+```tsx
+import { useState, React } from "react";
+import SomeComponent from "./SomeComponent";
+import { createContext } from 'react';
+
+export const SomeContext = createContext("");
+
+function App() {
+  const [text, setText] = useState("");
+
+  return (
+    <div>
+      <SomeContext.Provider value={{ text, setText }}>
+        <SomeComponent />
+      </SomeContext.Provider>
+    </div>
+  );
+}
+
+export default App;
+
+```
+</CodeBlock>
+
+Then you can call the context inside the component without prop drilling.
+
+<CodeBlock title={'SomeCompoent.tsx'}>
+```tsx
+import { useContext } from 'react';
+import { SomeContext } from '../App';
+
+function MyComponent() {
+  const { text, setText } = useContext(SomeContext);
+
+  return (
+    <div>
+      <h1>{text}</h1>
+      <button
+        onClick={() => {setText('Hello, world!')}}>
+        Click me
+      </button>
+    </div>
+  )
+}
+
+export default MyComponent;
+```
+</CodeBlock>
+
+## Redux & Redux saga
+While contextAPI is useful and can handle state sharing in most cases, for some complex logic we will use state management library like `Redux`.\
+API of Redux vary alot in different version. Please refer to [Tutorialspoint](https://www.tutorialspoint.com/redux/index.htm) and  [Redux Saga official site](https://redux-saga.js.org/docs/introduction/BeginnerTutorial/)
+
+## Guideline For Coding Style
+- Use camelcase to name variable
+- Avoid meaningless naming
+- Use camelcase and Capitalize 1st character for Component or View or Container
+- Use debounce or throttle to prevent duplicate calling for async action / heavy function
+- Avoid adding function/computed value after/inside render()/return jsx
+- Declare constant for reusable string
+- Prevent calling too many setState at once when there's async action / heavy function
+- Use functional components rather than class components for new files
+- Use Typescript (.tsx)
+- Avoid adding too much inline-style
+- Prop drilling should not exceed 2 level, consider to use redux instead
+  - parent ----> child ✔
+  - parent ----> child -----> child ✘
+
+
+<div></div>
