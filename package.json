@@ -4,9 +4,10 @@
   "author": "Anthony Wong",
   "version": "0.0.1",
   "type": "module",
+  "homepage": "https://shino369.github.io/react-mdx-runtime-reader-template/",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build --base=./",
+    "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
