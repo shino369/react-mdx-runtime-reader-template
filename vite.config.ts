@@ -9,6 +9,7 @@ export default defineConfig({
     mdx(),
     react(),     
   ],
+  base: '/react-mdx-runtime-reader-template/' ,
   resolve: {
     alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
