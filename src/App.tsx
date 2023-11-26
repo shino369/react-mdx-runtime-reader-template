@@ -23,7 +23,7 @@ const router = createBrowserRouter(
     element: <Wrapper children={route.element} />,
   })),
   {
-    basename: '/react-mdx-runtime-reader-template'
+    basename: '/react-mdx-runtime-reader-template/'
   }
 )
 
