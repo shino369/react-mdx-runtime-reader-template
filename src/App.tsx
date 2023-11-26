@@ -22,6 +22,9 @@ const router = createBrowserRouter(
     ...route,
     element: <Wrapper children={route.element} />,
   })),
+  {
+    basename: '/react-mdx-runtime-reader-template'
+  }
 )
 
 function code({ className, children, ...props }: any) {
@@ -53,7 +56,7 @@ function code({ className, children, ...props }: any) {
 const App = () => {
   return (
     <div className="card dark:bg-gray-600">
-      <RouterProvider router={router} />
+      <RouterProvider router={router}  />
     </div>
   )
 }
