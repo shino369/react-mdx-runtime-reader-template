@@ -9,7 +9,9 @@ export default defineConfig({
     mdx(),
     react(),     
   ],
-  base: '/react-mdx-runtime-reader-template/' ,
+  base: process.env.GITHUB_PAGES
+  ? '/react-mdx-runtime-reader-template/' // レポジトリ名を設定
+  : './',
   resolve: {
     alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
